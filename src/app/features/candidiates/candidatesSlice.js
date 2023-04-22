@@ -14,6 +14,9 @@ const candidatesSlice = createSlice({
     reducers: {
         setCandidates: (state, action) => {
             state.candidates = action.payload
+        },
+        addCandidate: (state, action) => {
+            state.candidates.push(action.payload)
         }
 
     }, 
@@ -24,9 +27,16 @@ const candidatesSlice = createSlice({
     }
 })
 
+export const { addCandidate } = candidatesSlice.actions
+
 export const fetchCandidates = createAsyncThunk('candidates/fetchCandidates', async(accessToken) => {
     const candidates = await axios.get(`${BASE_URL}/candidates`, { headers: {authorization: accessToken}})
     return candidates.data
 })
+
+export const addCandidateFetch = (candidate) => async(dispatch, getState) =>{
+    const candidate = await axios.post(`${BASE_URL}/candidates`, { headers: {authorization: accessToken}})
+    dispatch(addCandidate(candidate))
+} 
 
 export default candidatesSlice.reducer
