@@ -1,11 +1,12 @@
 import * as React from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
+// import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -13,17 +14,47 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
+// import SignInSide from '../signIn/signIn';
+import {signUpApi} from '../../apis/user'
+
 const theme = createTheme();
 
 export default function SignUp() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+  const [data, setData] = React.useState({ firstName: '', lastName: '', email: '', password: '' });
+
+  function handleChange(event) {
+    setData({ ...data, [event.target.name]: event.target.value });
   };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const navigate = useNavigate();
+
+    try {
+      console.log(data);
+      // await signUpApi(data);
+      navigate('/signIn');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const [navigation, setNavigation] = React.useState(false)
+  const handleSignUp = async () => {
+    try {
+      console.log(data);
+      signUpApi(data).then((err,res) => {
+        console.log(err);
+        if(!err){
+          setNavigation(true)
+        }
+      })
+      // navigate('/signIn');
+      // history.push('/signIn');
+    } catch (error) {
+      console.log(error);
+    }
+    
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -53,6 +84,8 @@ export default function SignUp() {
                   fullWidth
                   id="firstName"
                   label="First Name"
+                  value={data.firstName}
+                  onChange={handleChange}
                   autoFocus
                 />
               </Grid>
@@ -63,6 +96,8 @@ export default function SignUp() {
                   id="lastName"
                   label="Last Name"
                   name="lastName"
+                  value={data.lastName}
+                  onChange={handleChange}
                   autoComplete="family-name"
                 />
               </Grid>
@@ -73,6 +108,8 @@ export default function SignUp() {
                   id="email"
                   label="Email Address"
                   name="email"
+                  value={data.email}
+                  onChange={handleChange}
                   autoComplete="email"
                 />
               </Grid>
@@ -84,27 +121,21 @@ export default function SignUp() {
                   label="Password"
                   type="password"
                   id="password"
+                  value={data.password}
+                  onChange={handleChange}
                   autoComplete="new-password"
                 />
               </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                  label="I want to receive inspiration, marketing promotions and updates via email."
-                />
-              </Grid>
             </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+            <Link
+              onClick={handleSignUp}
+              to={navigation && '/signIn'}
             >
-              Sign Up
-            </Button>
+              Sign Up here
+            </Link>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link to="/signIn" variant="body2">
                   Already have an account? Sign in
                 </Link>
               </Grid>
